@@ -6,6 +6,7 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.RawModel;
 import renderEngine.Renderer;
+import shaders.StaticShader;
 
 import java.io.File;
 
@@ -18,31 +19,35 @@ public class MainGameLoop {
 
         Loader loader = new Loader();
         Renderer renderer = new Renderer();
+        StaticShader shader = new StaticShader();
 
         // OpenGL wants vertices to be defined counterclockwise
         float[] vertices = {
-                // left bottom tri
                 -0.5f, 0.5f, 0f,
                 -0.5f, -0.5f, 0f,
                 0.5f, -0.5f, 0f,
-                // right top tri
-                0.5f, -0.5f, 0f,
                 0.5f, 0.5f, 0f,
-                -0.5f, 0.5f, 0f
         };
-        RawModel model = loader.loadToVao(vertices);
+
+        int[] indices = {
+                0,1,3,  // Top left triangle
+                3,1,2   // Bottom right triangle
+        };
+
+        RawModel model = loader.loadToVao(vertices, indices);
+
+        Display.setTitle("Heyooo mayoo");
 
         while (!Display.isCloseRequested()) {
             renderer.prepare();
-            // game logic
-            // rendering
-            // every frame
-
+            shader.start();
             renderer.render(model);
-
+            shader.stop();
             DisplayManager.updateDisplay();
-            Display.setTitle("Heyooo mayoo");
+
         }
+
+        shader.cleanUp();
         loader.cleanUp();
         DisplayManager.closeDisplay();
 
