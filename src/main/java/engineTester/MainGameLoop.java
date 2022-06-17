@@ -1,12 +1,14 @@
 package engineTester;
 
+import models.TexturedModel;
 import org.lwjgl.LWJGLUtil;
 import org.lwjgl.opengl.Display;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import renderEngine.RawModel;
+import models.RawModel;
 import renderEngine.Renderer;
 import shaders.StaticShader;
+import textures.ModelTexture;
 
 import java.io.File;
 
@@ -34,14 +36,23 @@ public class MainGameLoop {
                 3,1,2   // Bottom right triangle
         };
 
-        RawModel model = loader.loadToVao(vertices, indices);
+        float[] textureCoords = {
+                0,0,
+                0,1,
+                1,1,
+                1,0
+        };
+
+        RawModel model = loader.loadToVao(vertices, textureCoords, indices);
+        ModelTexture texture = new ModelTexture(loader.loadTexture("howl"));
+        TexturedModel texturedModel = new TexturedModel(model, texture);
 
         Display.setTitle("Heyooo mayoo");
 
         while (!Display.isCloseRequested()) {
             renderer.prepare();
             shader.start();
-            renderer.render(model);
+            renderer.render(texturedModel);
             shader.stop();
             DisplayManager.updateDisplay();
 
